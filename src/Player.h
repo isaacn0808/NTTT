@@ -3,13 +3,16 @@
 class Player{
     public:
         int type;
-        Game* const gameptr;
-        Player(Game* gptr, int type) : gameptr(gptr), type(type) {};
-        void move(MovePos pos);
-        MovePos chooseRandomMove();
-        //virtual MovePos chooseMove();
+        Player(int type) : type(type) {};
+        void move(MovePos pos, Game* gameptr);
+        
 };
 
-/*  class RandomPlayer : Player{
-    MovePos chooseMove();
-};*/
+int randomPlayout(Game& oldGame, Player& p1, Player& p2);
+
+class Strategy{
+    private:
+         Strategy () {}
+    public:
+        static MovePos simpleMCEval(Game& game, Player& thisPlayer, Player& otherPlayer, int count);
+};

@@ -1,12 +1,13 @@
 #pragma once
 #include <iostream>
+#include <cmath>
 //rep. a move done on the board and its position
 struct MovePos{
     int x;
     int y;
     int type;
     void print(){
-        std::cout << x << " " << y << " " << type << '\n';
+        std::cout << (int) floor(x/3) << " " << (int) floor(y/3) << " " << x % 3 << " " << y % 3 << '\n';
     }
 };
 

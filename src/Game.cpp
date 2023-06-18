@@ -1,8 +1,7 @@
 #include "Game.h"
 #include "Board.h"
 #include <cmath>
-#include <iostream>
-#include <typeinfo>
+#include <random>
 //constructor
 Game::Game() : lastMove{-1, -1, -1}{  
     }
@@ -48,3 +47,11 @@ std::vector<MovePos> Game::getAvailableMoves(){
     return availableMoves;
 }
 
+MovePos Game::chooseRandomMove(){
+    std::vector<MovePos> avMoves = getAvailableMoves();
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, avMoves.size() - 1);
+    int randomIndex = dis(gen);
+    return avMoves[randomIndex];
+}

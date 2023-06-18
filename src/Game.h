@@ -18,5 +18,6 @@ class Game{
         MovePos lastMove;
         Board board;
         std::vector<MovePos> getAvailableMoves();
+        MovePos chooseRandomMove();
         
 };

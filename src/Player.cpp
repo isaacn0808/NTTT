@@ -1,38 +1,71 @@
 #include "Player.h"
 #include "Board.h"
 #include <random>
-
-void Player::move(MovePos pos){
+#include <chrono>
+using namespace std::chrono;
+void Player::move(MovePos pos, Game* gameptr){
     const MovePos moved = {pos.x, pos.y, type};
     gameptr->board.move(moved);
     gameptr->lastMove = moved;
 }
 
-MovePos Player::chooseRandomMove(){
-    std::vector<MovePos> avMoves = gameptr->getAvailableMoves();
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(0, avMoves.size() - 1);
-    int randomIndex = dis(gen);
-    return avMoves[randomIndex];
+int randomPlayout(Game& game, Player& p1, Player& p2){
+    Game gameCopy(game);
+    while (gameCopy.board.checkWin() == -1){
+        p1.move(gameCopy.chooseRandomMove(), &gameCopy);
+        if (gameCopy.board.checkWin() != -1){
+            return game.board.checkWin();
+        }
+        p2.move(gameCopy.chooseRandomMove(), &gameCopy);
+    }
+    return gameCopy.board.checkWin();
 }
 
-int randomPlayout(){
-    Game g;
-    Player p1(&g, 0);
-    Player p2(&g, 1);
-    while (g.board.checkWin() == -1){
-        p1.move(p1.chooseRandomMove());
-        g.board.print();
-        if (g.board.checkWin() != -1){
-            return g.board.checkWin();
+MovePos Strategy::simpleMCEval(Game& game, Player& thisPlayer, Player& otherPlayer, int count){
+    std::vector<MovePos> avMoves = game.getAvailableMoves();
+    const int moveLen = avMoves.size();
+    int bestEval = 0; 
+    int bestIndex = 0;
+    for (int i = 0; i < moveLen; ++i){
+        thisPlayer.move(avMoves[i], &game);
+        int win, loss, draw;
+        win = loss = draw = 0;
+        for (int k = 0; k < count; ++k){
+            const int result = randomPlayout(game, otherPlayer, thisPlayer);
+            if (result == 2){
+                ++draw;
+            }
+            else if (result == thisPlayer.type){
+                ++win;
+            }
+            else {
+                ++loss;
+            }
         }
-        p2.move(p2.chooseRandomMove());
-        g.board.print();
+        const float eval = 100 * (win + ( (float) draw / 2)) / moveLen;
+        //avMoves[i].print();
+        //std::cout << eval << '\n';
+        if (eval > bestEval){
+            bestEval = eval;
+            bestIndex = i;
+        }
+        game.board.move(avMoves[i]);
     }
-    return g.board.checkWin();
+    return avMoves[bestIndex];
 }
 
 int main(){
-    randomPlayout();
+    Game g;
+    Player p1(0);
+    Player p2(1);
+    auto start = high_resolution_clock::now();
+    MovePos bestMove = Strategy::simpleMCEval(g, p1, p2, 1000);
+    auto end = high_resolution_clock::now();
+    std::cout << duration_cast<milliseconds>(end-start).count() << '\n';
+    //bestMove.print();
+    std::cout << "Press any key to exit:" << '\n';
+    getchar();
+
 }
+
+
