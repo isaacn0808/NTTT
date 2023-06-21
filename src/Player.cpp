@@ -54,17 +54,56 @@ MovePos Strategy::simpleMCEval(Game& game, Player& thisPlayer, Player& otherPlay
     return avMoves[bestIndex];
 }
 
+MovePos simpleMCEvalWorst(Game& game, Player& thisPlayer, Player& otherPlayer, int count){
+    std::vector<MovePos> avMoves = game.getAvailableMoves();
+    const int moveLen = avMoves.size();
+    int bestEval = 10000; 
+    int bestIndex = 0;
+    for (int i = 0; i < moveLen; ++i){
+        thisPlayer.move(avMoves[i], &game);
+        int win, loss, draw;
+        win = loss = draw = 0;
+        for (int k = 0; k < count; ++k){
+            const int result = randomPlayout(game, otherPlayer, thisPlayer);
+            if (result == 2){
+                ++draw;
+            }
+            else if (result == thisPlayer.type){
+                ++win;
+            }
+            else {
+                ++loss;
+            }
+        }
+        const float eval = 100 * (win + ( (float) draw / 2)) / moveLen;
+        //avMoves[i].print();
+        //std::cout << eval << '\n';
+        if (eval < bestEval){
+            bestEval = eval;
+            bestIndex = i;
+        }
+        game.board.move(avMoves[i]);
+    }
+    return avMoves[bestIndex];
+}
+
 int main(){
     Game g;
     Player p1(0);
     Player p2(1);
-    auto start = high_resolution_clock::now();
-    MovePos bestMove = Strategy::simpleMCEval(g, p1, p2, 1000);
-    auto end = high_resolution_clock::now();
-    std::cout << duration_cast<milliseconds>(end-start).count() << '\n';
-    //bestMove.print();
-    std::cout << "Press any key to exit:" << '\n';
-    getchar();
+    int k = 0;
+    while (g.board.checkWin() == -1){
+        p1.move(Strategy::simpleMCEval(g, p1, p2, 5000), &g);
+        ++k;
+        g.board.print();
+        if (g.board.checkWin() != -1){
+            break;
+        }
+        p2.move(simpleMCEvalWorst(g, p2, p1, 5000), &g);
+        ++k;
+        g.board.print();
+    }
+    std::cout << k;
 
 }
 
