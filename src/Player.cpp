@@ -43,8 +43,6 @@ MovePos Strategy::simpleMCEval(Game& game, Player& thisPlayer, Player& otherPlay
             }
         }
         const float eval = 100 * (win + ( (float) draw / 2)) / moveLen;
-        //avMoves[i].print();
-        //std::cout << eval << '\n';
         if (eval > bestEval){
             bestEval = eval;
             bestIndex = i;
@@ -76,8 +74,6 @@ MovePos simpleMCEvalWorst(Game& game, Player& thisPlayer, Player& otherPlayer, i
             }
         }
         const float eval = 100 * (win + ( (float) draw / 2)) / moveLen;
-        //avMoves[i].print();
-        //std::cout << eval << '\n';
         if (eval < bestEval){
             bestEval = eval;
             bestIndex = i;
