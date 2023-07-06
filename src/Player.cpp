@@ -1,13 +1,15 @@
 #include "Player.h"
 
 using namespace std::chrono;
-void Player::move(MovePos pos, Game* gameptr) {
+void Player::move(MovePos pos, Game* gameptr) 
+{
     const MovePos moved = { pos.x, pos.y, type };
     gameptr->board.move(moved);
     gameptr->lastMove = moved;
 }
 
-int randomPlayout(Game& game, Player& p1, Player& p2) {
+int randomPlayout(Game& game, Player& p1, Player& p2) 
+{
     Game gameCopy(game);
     while (gameCopy.board.checkWin() == -1) {
         p1.move(gameCopy.chooseRandomMove(), &gameCopy);
@@ -21,7 +23,8 @@ int randomPlayout(Game& game, Player& p1, Player& p2) {
 namespace Strategy {
 static std::mutex evalMutex;
 
-void asyncPlayout(MovePos move, Game* game, Player* otherPlayer, Player* thisPlayer, float* bestEval, int* bestIndex, int i, int count) {
+void asyncPlayout(MovePos move, Game* game, Player* otherPlayer, Player* thisPlayer, float* bestEval, int* bestIndex, int i, int count) 
+{
     int win, loss, draw;
     win = loss = draw = 0;
     Game gamecpy(*game);
@@ -46,7 +49,8 @@ void asyncPlayout(MovePos move, Game* game, Player* otherPlayer, Player* thisPla
     }
 }
 
-MovePos simpleMCEvalasync(Game& game, Player& thisPlayer, Player& otherPlayer, int count) {
+MovePos simpleMCEvalasync(Game& game, Player& thisPlayer, Player& otherPlayer, int count) 
+{
     std::vector<MovePos> avMoves = game.getAvailableMoves();
     int moveLen = avMoves.size();
     float bestEval = 0.0f;
@@ -62,7 +66,8 @@ MovePos simpleMCEvalasync(Game& game, Player& thisPlayer, Player& otherPlayer, i
 
 }
 
-MovePos simpleEpsilonGreedy(Game& game, Player& thisPlayer, Player& otherPlayer, int count, double epsilon){
+MovePos simpleEpsilonGreedy(Game& game, Player& thisPlayer, Player& otherPlayer, int count, double epsilon)
+{
     std::vector<MovePos> avMoves = game.getAvailableMoves();
     const int moveLen = avMoves.size();
     std::vector<float> evals(moveLen, 1.0f);
@@ -104,7 +109,8 @@ MovePos simpleEpsilonGreedy(Game& game, Player& thisPlayer, Player& otherPlayer,
 };
 
 
-int main() {
+int main() 
+{
     auto start = high_resolution_clock::now();
     int w = 0; int l = 0; int d = 0;
         Game g;

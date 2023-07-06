@@ -2,8 +2,10 @@
 #include <cmath>
 #include <cstdio>
 // for the print method, converts numbers on the board into X, O, or -Only accessed by print method
-char Board::numToChar(int num) {
-    switch (num) {
+char Board::numToChar(int num) 
+{
+    switch (num) 
+    {
     case 1:
         return 'X';
     case 0:
@@ -15,22 +17,27 @@ char Board::numToChar(int num) {
 }
 
 //checks if nested mini tic tac toe board is filled
-int Board::checkFilled(MovePos move) {
+int Board::checkFilled(MovePos move) 
+{
     const int boxStartX = (int)3 * floor(move.x / 3);
     const int boxStartY = (int)3 * floor(move.y / 3);
     // horizontal 3-in-a-row check
-    for (int y = boxStartY; y < boxStartY + 3; ++y) {
+    for (int y = boxStartY; y < boxStartY + 3; ++y) 
+    {
         if (asFull[y][boxStartX] != -1 &&
             asFull[y][boxStartX] == asFull[y][boxStartX + 1] &&
-            asFull[y][boxStartX + 1] == asFull[y][boxStartX + 2]) {
+            asFull[y][boxStartX + 1] == asFull[y][boxStartX + 2]) 
+            {
             return asFull[y][boxStartX];
         }
     }
     // vertical 3-in-a-row check
-    for (int x = boxStartX; x < boxStartX + 3; ++x) {
+    for (int x = boxStartX; x < boxStartX + 3; ++x) 
+    {
         if (asFull[boxStartY][x] != -1 &&
             asFull[boxStartY][x] == asFull[boxStartY + 1][x] &&
-            asFull[boxStartY + 1][x] == asFull[boxStartY + 2][x]) {
+            asFull[boxStartY + 1][x] == asFull[boxStartY + 2][x]) 
+            {
             return asFull[boxStartY][x];
         }
     }
@@ -39,14 +46,18 @@ int Board::checkFilled(MovePos move) {
         if ((asFull[boxStartY][boxStartX] == asFull[boxStartY + 1][boxStartX + 1] &&
             asFull[boxStartY + 1][boxStartX + 1] == asFull[boxStartY + 2][boxStartX + 2]) ||
             (asFull[boxStartY + 2][boxStartX] == asFull[boxStartY + 1][boxStartX + 1] &&
-                asFull[boxStartY + 1][boxStartX + 1] == asFull[boxStartY][boxStartX + 2])) {
+                asFull[boxStartY + 1][boxStartX + 1] == asFull[boxStartY][boxStartX + 2])) 
+                {
             return asFull[boxStartY + 1][boxStartX + 1];
         }
     }
     //check for no draw, return -1 if there's no draw
-    for (int x = boxStartX; x < boxStartX + 3; ++x) {
-        for (int y = boxStartY; y < boxStartY + 3; ++y) {
-            if (asFull[y][x] == -1) {
+    for (int x = boxStartX; x < boxStartX + 3; ++x) 
+    {
+        for (int y = boxStartY; y < boxStartY + 3; ++y) 
+        {
+            if (asFull[y][x] == -1) 
+            {
                 return -1;
             }
         }
@@ -57,18 +68,22 @@ int Board::checkFilled(MovePos move) {
 
 int Board::checkWin() {
     // horizontal 3-in-a-row check
-    for (int y = 0; y < 3; ++y) {
+    for (int y = 0; y < 3; ++y) 
+    {
         if (as3x3[y][0] != -1 &&
             as3x3[y][0] == as3x3[y][1] &&
-            as3x3[y][1] == as3x3[y][2]) {
+            as3x3[y][1] == as3x3[y][2]) 
+            {
             return as3x3[y][0];
         }
     }
     // vertical 3-in-a-row check
-    for (int x = 0; x < 3; ++x) {
+    for (int x = 0; x < 3; ++x) 
+    {
         if (as3x3[0][x] != -1 &&
             as3x3[0][x] == as3x3[1][x] &&
-            as3x3[1][x] == as3x3[2][x]) {
+            as3x3[1][x] == as3x3[2][x]) 
+            {
             return as3x3[0][x];
         }
     }
@@ -77,14 +92,18 @@ int Board::checkWin() {
         if ((as3x3[0][0] == as3x3[1][1] &&
             as3x3[1][1] == as3x3[2][2]) ||
             (as3x3[2][0] == as3x3[1][1] &&
-                as3x3[1][1] == as3x3[0][2])) {
+                as3x3[1][1] == as3x3[0][2])) 
+                {
             return as3x3[1][1];
         }
     }
     //check for no draw, return -1 if there's no draw
-    for (int x = 0; x < 3; ++x) {
-        for (int y = 0; y < 3; ++y) {
-            if (as3x3[y][x] == -1) {
+    for (int x = 0; x < 3; ++x) 
+    {
+        for (int y = 0; y < 3; ++y) 
+        {
+            if (as3x3[y][x] == -1) 
+            {
                 return -1;
             }
         }
@@ -93,7 +112,8 @@ int Board::checkWin() {
     return 2;
 }
 //makes a move that changes asFull board, as well as possibly as3x3 if it fills a mini 3x3 box
-void Board::move(MovePos move) {
+void Board::move(MovePos move) 
+{
     asFull[move.y][move.x] = move.type;
     const int bigXPos = (int)floor(move.x / 3);
     const int bigYPos = (int)floor(move.y / 3);
@@ -102,9 +122,11 @@ void Board::move(MovePos move) {
 }
 
 //prints out the entire NTTT + as3x3 rep. in a neat fashion
-void Board::print() {
+void Board::print() 
+{
     printf("\n");
-    for (int i = 0; i < 9; ++i) {
+    for (int i = 0; i < 9; ++i) 
+    {
         if (i % 3 == 0) {
             printf("\n");
         }
