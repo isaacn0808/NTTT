@@ -6,10 +6,22 @@
 //constructor
 Game::Game() : lastMove{ -1, -1, -1 } {
 }
+void Game::move(MovePos m){
+    if (lastMove.type == -1)
+    {
+        MovePos mWithType {m.x, m.y, 0};
+        lastMove = mWithType;
+        board.move(mWithType);
+        return;
+    }
+    MovePos mWithType {m.x, m.y, 1 - lastMove.type};
+    lastMove = mWithType;
+    board.move(mWithType);
+}
 
-Game::Game(Game g, MovePos m): lastMove(m), board(g.board)
-{
-    board.move(m);
+void Game::remove(MovePos m){
+    MovePos mWithType {m.x, m.y, -1};
+    board.move(mWithType);
 }
 //finds available moves within a 3x3 box and adds them to the main vector of available moves
 void Game::addBoxAvailableMoves(MovePos box, std::vector<MovePos>& vec) 

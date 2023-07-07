@@ -8,33 +8,38 @@ void Player::move(MovePos pos, Game* gameptr)
     gameptr->lastMove = moved;
 }
 
-int randomPlayout(Game& game, Player& p1, Player& p2) 
+int randomPlayout(Game& game) 
 {
     Game gameCopy(game);
     while (gameCopy.board.checkWin() == -1) {
-        p1.move(gameCopy.chooseRandomMove(), &gameCopy);
+        gameCopy.move(gameCopy.chooseRandomMove());
+        gameCopy.board.print();
         if (gameCopy.board.checkWin() != -1) {
-            return game.board.checkWin();
+            std::cout << gameCopy.board.checkWin() << "\n";
+            return gameCopy.board.checkWin();
         }
-        p2.move(gameCopy.chooseRandomMove(), &gameCopy);
+        gameCopy.move(gameCopy.chooseRandomMove());
+        gameCopy.board.print();
     }
+    std::cout << gameCopy.board.checkWin() << "\n";
     return gameCopy.board.checkWin();
 }
 namespace Strategy {
 static std::mutex evalMutex;
 
-void asyncPlayout(MovePos move, Game* game, Player* otherPlayer, Player* thisPlayer, float* bestEval, int* bestIndex, int i, int count) 
+void asyncPlayout(MovePos move, Game* game, float* bestEval, int* bestIndex, int i, int count, int type) 
 {
     int win, loss, draw;
     win = loss = draw = 0;
     Game gamecpy(*game);
-    thisPlayer->move(move, &gamecpy);
+    gamecpy.move(move);
+    std::cout << "move moved" << '\n';
     for (int k = 0; k < count; ++k) {
-        const int result = randomPlayout(gamecpy, *otherPlayer, *thisPlayer);
+        const int result = randomPlayout(gamecpy);
         if (result == 2) {
             ++draw;
         }
-        else if (result == thisPlayer->type) {
+        else if (result == type) {
             ++win;
         }
         else {
@@ -49,7 +54,7 @@ void asyncPlayout(MovePos move, Game* game, Player* otherPlayer, Player* thisPla
     }
 }
 
-MovePos simpleMCEvalasync(Game& game, Player& thisPlayer, Player& otherPlayer, int count) 
+MovePos simpleMCEvalasync(Game& game, int count, int type) 
 {
     std::vector<MovePos> avMoves = game.getAvailableMoves();
     int moveLen = avMoves.size();
@@ -57,7 +62,7 @@ MovePos simpleMCEvalasync(Game& game, Player& thisPlayer, Player& otherPlayer, i
     int bestIndex = 0;
     std::vector<std::future<void>> asyncFutures;
     for (int i = 0; i < moveLen; ++i) {
-        asyncFutures.push_back(std::async(std::launch::async, &asyncPlayout, avMoves[i], &game, &otherPlayer, &thisPlayer, &bestEval, &bestIndex, i, count));
+        asyncFutures.push_back(std::async(std::launch::async, &asyncPlayout, avMoves[i], &game, &bestEval, &bestIndex, i, count, type));
     }
     for (int i = 0; i < moveLen; ++i) {
         asyncFutures[i].wait();
@@ -66,7 +71,7 @@ MovePos simpleMCEvalasync(Game& game, Player& thisPlayer, Player& otherPlayer, i
 
 }
 
-MovePos simpleEpsilonGreedy(Game& game, Player& thisPlayer, Player& otherPlayer, int count, double epsilon)
+MovePos simpleEpsilonGreedy(Game& game, int count, double epsilon, int type)
 {
     std::vector<MovePos> avMoves = game.getAvailableMoves();
     const int moveLen = avMoves.size();
@@ -84,14 +89,14 @@ MovePos simpleEpsilonGreedy(Game& game, Player& thisPlayer, Player& otherPlayer,
             auto maxIter = std::max_element(evals.begin(), evals.end());
             i = std::distance(evals.begin(), maxIter);
         }
-        thisPlayer.move(avMoves[i], &game);
-        const int playResult = randomPlayout(game, otherPlayer, thisPlayer);
-        game.board.move(avMoves[i]);
+        game.move(avMoves[i]);
+        const int playResult = randomPlayout(game);
+        game.remove(avMoves[i]);
         float result;
         if (playResult == 2) {
             result = 0.5f;
         }
-        else if (playResult == thisPlayer.type) {
+        else if (playResult == type) {
             result = 1.0f;
         }
         else {
@@ -116,7 +121,7 @@ int main()
         Game g;
         Player p1(0);
         Player p2(1);
-        p1.move(Strategy::simpleMCEvalasync(g, p1, p2, 1000), &g);
+        int a = randomPlayout(g);
        /*while (g.board.checkWin() == -1) {
             p1.move(Strategy::simpleMCEvalasync(g, p1, p2, 1000), &g);
             if (g.board.checkWin() != -1) {

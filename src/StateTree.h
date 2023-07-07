@@ -8,7 +8,7 @@ class StateTree
         std::unordered_map<StateNode, float> Q;
         std::unordered_map<StateNode, int> N;
         void expand(StateNode& node);
-        float UCBT(StateNode& node, float explorationConstant = sqrt(2.0f));
+        StateNode& UCBTSelect(StateNode& node, float explorationConstant = sqrt(2.0f));
 
 };
 

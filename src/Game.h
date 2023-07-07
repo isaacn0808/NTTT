@@ -15,10 +15,11 @@ private:
     void addBoxAvailableMoves(MovePos box, std::vector<MovePos>& vec);
 public:
     Game();
-    Game(Game g, MovePos move);
+    // first move on a board MUST be 0, the next one 1, then 0 etc.
     MovePos lastMove;
     Board board;
     std::vector<MovePos> getAvailableMoves();
     MovePos chooseRandomMove();
-
+    void move(MovePos m);
+    void remove(MovePos m);
 };

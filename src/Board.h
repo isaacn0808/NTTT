@@ -8,7 +8,7 @@ struct MovePos {
         int y;
         int type;
         void print() {
-            std::cout << (int)floor(x / 3) << " " << (int)floor(y / 3) << " " << x % 3 << " " << y % 3 << '\n';
+            std::cout << (int)floor(x / 3) << " " << (int)floor(y / 3) << " " << x % 3 << " " << y % 3 << " " << type << '\n';
         }
     };
 class Board {

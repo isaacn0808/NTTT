@@ -120,7 +120,6 @@ void Board::move(MovePos move)
     //check if the move changed one of the mini box states, reflect change on as3x3
     as3x3[bigYPos][bigXPos] = checkFilled(move);
 }
-
 //prints out the entire NTTT + as3x3 rep. in a neat fashion
 void Board::print() 
 {
