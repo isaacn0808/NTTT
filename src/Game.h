@@ -15,6 +15,7 @@ private:
     void addBoxAvailableMoves(MovePos box, std::vector<MovePos>& vec);
 public:
     Game();
+    Game(Game g, MovePos move);
     MovePos lastMove;
     Board board;
     std::vector<MovePos> getAvailableMoves();

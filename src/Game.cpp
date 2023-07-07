@@ -6,6 +6,11 @@
 //constructor
 Game::Game() : lastMove{ -1, -1, -1 } {
 }
+
+Game::Game(Game g, MovePos m): lastMove(m), board(g.board)
+{
+    board.move(m);
+}
 //finds available moves within a 3x3 box and adds them to the main vector of available moves
 void Game::addBoxAvailableMoves(MovePos box, std::vector<MovePos>& vec) 
 {
