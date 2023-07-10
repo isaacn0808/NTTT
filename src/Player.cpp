@@ -1,27 +1,16 @@
 #include "Player.h"
 
 using namespace std::chrono;
-void Player::move(MovePos pos, Game* gameptr) 
-{
-    const MovePos moved = { pos.x, pos.y, type };
-    gameptr->board.move(moved);
-    gameptr->lastMove = moved;
-}
-
 int randomPlayout(Game& game) 
 {
     Game gameCopy(game);
     while (gameCopy.board.checkWin() == -1) {
         gameCopy.move(gameCopy.chooseRandomMove());
-        gameCopy.board.print();
         if (gameCopy.board.checkWin() != -1) {
-            std::cout << gameCopy.board.checkWin() << "\n";
             return gameCopy.board.checkWin();
         }
         gameCopy.move(gameCopy.chooseRandomMove());
-        gameCopy.board.print();
     }
-    std::cout << gameCopy.board.checkWin() << "\n";
     return gameCopy.board.checkWin();
 }
 namespace Strategy {
@@ -33,7 +22,6 @@ void asyncPlayout(MovePos move, Game* game, float* bestEval, int* bestIndex, int
     win = loss = draw = 0;
     Game gamecpy(*game);
     gamecpy.move(move);
-    std::cout << "move moved" << '\n';
     for (int k = 0; k < count; ++k) {
         const int result = randomPlayout(gamecpy);
         if (result == 2) {
@@ -104,7 +92,6 @@ MovePos simpleEpsilonGreedy(Game& game, int count, double epsilon, int type)
         }
         counts[i]++;
         evals[i] += ((result - evals[i]) / counts[i]);
-        k++;
     }
     auto maxIter = std::max_element(evals.begin(), evals.end());
     int i = std::distance(evals.begin(), maxIter);
@@ -114,23 +101,21 @@ MovePos simpleEpsilonGreedy(Game& game, int count, double epsilon, int type)
 };
 
 
-int main() 
+/* int main() 
 {
     auto start = high_resolution_clock::now();
-    int w = 0; int l = 0; int d = 0;
         Game g;
-        Player p1(0);
-        Player p2(1);
-        int a = randomPlayout(g);
-       /*while (g.board.checkWin() == -1) {
-            p1.move(Strategy::simpleMCEvalasync(g, p1, p2, 1000), &g);
+        while (g.board.checkWin() == -1) {
+            g.move(Strategy::simpleMCEvalasync(g, 1000, 0));
+            g.board.print();
             if (g.board.checkWin() != -1) {
                 break;
             }
-            p2.move(Strategy::simpleMCEvalasync(g, p1, p2, 1000), &g);
-        }*/
+            g.move(Strategy::simpleMCEvalasync(g, 1000, 1));
+            g.board.print();
+        }
     auto end = high_resolution_clock::now();
     std::cout << duration_cast<milliseconds>(end - start).count() << '\n';
     std::cin.get();
     return 0;
-}
+} */

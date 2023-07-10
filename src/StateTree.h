@@ -4,11 +4,14 @@
 class StateTree
 {
     public:
-        std::unordered_map<StateNode, std::vector<StateNode>> childMap;
-        std::unordered_map<StateNode, float> Q;
-        std::unordered_map<StateNode, int> N;
+        StateTree(float branchingFactor): branchingFactor(branchingFactor){}
+        float branchingFactor;
+        std::unordered_map<int, std::vector<StateNode>> childMap; //to access a node's children, its index is its ID
         void expand(StateNode& node);
-        StateNode& UCBTSelect(StateNode& node, float explorationConstant = sqrt(2.0f));
+        int UCTSelect(StateNode& node);
+        std::vector<StateNode*> selectPath(StateNode& node);
+        void backprop(std::vector<StateNode*>& path, float reward);
+        void search(StateNode& node);
 
 };
 
