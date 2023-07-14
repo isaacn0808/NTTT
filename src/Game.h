@@ -23,3 +23,5 @@ public:
     void move(MovePos m);
     void remove(MovePos m);
 };
+
+int randomPlayout(Game& game);

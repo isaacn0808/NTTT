@@ -1,5 +1,4 @@
 #pragma once
-#include "Player.h"
 #include "Game.h"
 class StateNode
 {
@@ -16,13 +15,5 @@ public:
 	int currentPlayer;
 	Game game;
 
-};
-
-struct NodeHash
-{
-	int operator()(const StateNode& node) const
-	{
-		return node.ID;
-	}
 };
 

@@ -16,26 +16,9 @@ StateNode::StateNode(StateNode* parent, MovePos move):
         //print();
     }
 
-bool StateNode::operator==(const StateNode& other) const
-{
-    return ID == other.ID;
-}
-
 void StateNode::print()
 {
-    std::cout << "ID: " << ID << " Q: " << (float)Q << " N: " << N << " CURR: " << currentPlayer << " AVG: " << (Q / N) - 0.5 << '\n';
+    std::cout << "MOVE POS: ";
+    game.lastMove.print();
+    std::cout << " ID: " << ID << " Q: " << (float)Q << " N: " << N << " CURR: " << currentPlayer << " AVG: " << (Q / N) - 0.5 << '\n';
 }
-
-/* int main(){
-    auto start = high_resolution_clock::now();
-    int i = 0;
-    Game g;
-    while(i<100)
-    {
-        StateNode node(g, 0);
-        ++i;
-    }
-    auto end = high_resolution_clock::now();
-    std::cout << duration_cast<microseconds>(end-start).count() << '\n';
-    std::cout << StateNode::objectCount << '\n';
-} */

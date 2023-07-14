@@ -98,24 +98,48 @@ MovePos simpleEpsilonGreedy(Game& game, int count, double epsilon, int type)
     return avMoves[i];
 }
 
+
+MovePos MCTSeval(Game& game, int count, int type, float branchFactor)
+{
+    StateNode::objectCount = 0;
+    StateNode root(game, type);
+    StateTree tree(branchFactor);
+    int bestIndex{};
+    float bestEval = 1.0f;
+    const int avLen = game.getAvailableMoves().size();
+    int k{};
+    while(k++ < count * avLen)
+    {
+        tree.search(root);
+    }
+    for(int i = 0; i < tree.childMap[0].size(); ++i)
+    {
+        StateNode node = tree.childMap[0][i];
+       // node.print();
+        if((node.Q / (float) node.N) < bestEval)
+        {
+            bestEval = node.Q / (float) node.N;
+            bestIndex = i;
+        }
+    }
+    return tree.childMap[0][bestIndex].game.lastMove;
+}
 };
-
-
-/* int main() 
+ int main() 
 {
     auto start = high_resolution_clock::now();
         Game g;
         while (g.board.checkWin() == -1) {
-            g.move(Strategy::simpleMCEvalasync(g, 1000, 0));
-            g.board.print();
+            g.move(Strategy::MCTSeval(g, 1000, 0, 0.5));
+          //  g.board.print();
             if (g.board.checkWin() != -1) {
                 break;
             }
-            g.move(Strategy::simpleMCEvalasync(g, 1000, 1));
-            g.board.print();
+            g.move(Strategy::MCTSeval(g, 1000, 1, 0.25));
+           // g.board.print();
         }
+    std::cout << g.board.checkWin() << '\n';
     auto end = high_resolution_clock::now();
     std::cout << duration_cast<milliseconds>(end - start).count() << '\n';
     std::cin.get();
-    return 0;
-} */
+}

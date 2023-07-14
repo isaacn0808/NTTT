@@ -1,4 +1,5 @@
 #include "StateTree.h"
+#include "StateNode.h"
 #include <algorithm>
 void StateTree::expand(StateNode& node)
 {
@@ -14,7 +15,7 @@ void StateTree::expand(StateNode& node)
 
 int StateTree::UCTSelect(StateNode& node)
 {
-    std::vector<StateNode> childNodes = childMap.at(node.ID);
+    std::vector<StateNode>* childNodes = &childMap.at(node.ID);
 
     auto UCT
     {
@@ -25,12 +26,12 @@ int StateTree::UCTSelect(StateNode& node)
             return exploit + explore;  
         }
     };
-    auto maxIter = std::max_element(childNodes.begin(), childNodes.end(), [=] (const StateNode& a, const StateNode& b) -> bool
+    auto maxIter = std::max_element(childNodes->begin(), childNodes->end(), [=] (const StateNode& a, const StateNode& b) -> bool
     {
         return UCT(a) < UCT(b);
     });
     //std::cout << UCT(*maxIter) << '\n';
-    int i = std::distance(childNodes.begin(), maxIter);
+    int i = std::distance(childNodes->begin(), maxIter);
     return i;
 }
 
@@ -47,7 +48,7 @@ std::vector<StateNode*> StateTree::selectPath(StateNode& node)
         path.push_back(nodeptr);
         // First check whether the node is expanded or not by searching for it in the childMap - if it is not expanded, we stop the search here
         // We assume that we will never go as far deep as reaching a terminal state, so there is no need to check for a win (it costs extra time)
-        if (!childMap.contains(nodeptr->ID))
+        if (!childMap.contains(nodeptr->ID) || nodeptr->game.board.checkWin() != -1)
         {
             return path;
         }
@@ -79,24 +80,4 @@ void StateTree::search(StateNode& node)
     expand(*leaf);
     float reward = randomPlayout(leaf->game);
     backprop(pathToLeaf, reward);
-}
-
-int main(){
-    int i = 0;
-    Game g;
-  //  g.move({4,4,-1});
-    StateNode root(g, 0);
-    StateNode* rootptr = &root;
-    StateTree tree{0.5};
-    while(i++ < 100000){
-    tree.search(*rootptr);
-   // std::cout << "------\n";
-    }
-    std::vector<StateNode> children = tree.childMap[0];
-    for(StateNode node : children){
-        node.print();
-        node.game.lastMove.print();
-    }
-    std::cout << tree.childMap.size() << '\n';
-    std::cout << StateNode::objectCount << '\n';
 }

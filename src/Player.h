@@ -6,5 +6,5 @@
 #include <ctime>
 #include <algorithm>
 #include "Game.h"
-
-int randomPlayout(Game& game);
+#include "StateNode.h"
+#include "StateTree.h"
