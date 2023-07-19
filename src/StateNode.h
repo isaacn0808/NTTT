@@ -1,5 +1,7 @@
 #pragma once
 #include "Game.h"
+#include <memory>
+#define StateNodePtr std::unique_ptr<StateNode, std::default_delete<StateNode>>
 class StateNode
 {
 	// a node representing all of the state of a game and its players, used in monte carlo tree search
@@ -8,6 +10,7 @@ public:
 	StateNode(StateNode* parent, MovePos move);
 	bool operator==(const StateNode& other) const;
 	void print();
+	std::vector<StateNodePtr> children;
 	static int objectCount;
 	int ID;
 	float Q; // current reward node has gained

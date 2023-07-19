@@ -5,11 +5,11 @@ using namespace std::chrono;
 int StateNode::objectCount = 0;
 
 StateNode::StateNode(Game g, int currentPlayer): 
-    game(g), currentPlayer(currentPlayer), Q(0.0f), N(1), ID(objectCount++)
+    game(g), currentPlayer(currentPlayer), Q(0.0f), N(0), ID(objectCount++)
 {}
 
 StateNode::StateNode(StateNode* parent, MovePos move): 
-    currentPlayer(1 - parent->currentPlayer), game(parent->game), Q(0.0f), N(1), ID(objectCount++)
+    currentPlayer(1 - parent->currentPlayer), game(parent->game), Q(0.0f), N(0), ID(objectCount++)
     {
        // std::cout << parent->currentPlayer << '\n';
         game.move(move);
@@ -22,3 +22,4 @@ void StateNode::print()
     game.lastMove.print();
     std::cout << " ID: " << ID << " Q: " << (float)Q << " N: " << N << " CURR: " << currentPlayer << " AVG: " << (Q / N) - 0.5 << '\n';
 }
+

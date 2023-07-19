@@ -6,12 +6,14 @@ class StateTree
     public:
         StateTree(float branchingFactor): branchingFactor(branchingFactor){}
         float branchingFactor;
-        std::unordered_map<int, std::vector<StateNode>> childMap; //to access a node's children, its index is its ID
+        static int expandCallCount;
+        static int randomPlayoutCallCount;
         void expand(StateNode& node);
         int UCTSelect(StateNode& node);
         std::vector<StateNode*> selectPath(StateNode& node);
         void backprop(std::vector<StateNode*>& path, float reward);
         void search(StateNode& node);
+        float UCT(StateNodePtr& child, StateNode& node);
 
 };
 

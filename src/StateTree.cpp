@@ -1,38 +1,53 @@
 #include "StateTree.h"
 #include "StateNode.h"
 #include <algorithm>
+#include <memory>
 void StateTree::expand(StateNode& node)
 {
     const std::vector<MovePos> avMoves = node.game.getAvailableMoves();
-    std::vector<StateNode> childNodes;
-    childNodes.reserve(avMoves.size());
+    node.children.reserve(avMoves.size());
     for (MovePos m : avMoves)
     {
-        childNodes.emplace_back(&node, m);
+        node.children.push_back(std::move(std::make_unique<StateNode>(&node, m)));
     }
-    childMap.insert({node.ID, std::move(childNodes)});
+}
+
+
+float StateTree::UCT(StateNodePtr& child, StateNode& node)
+{
+    if (child->N == 0)
+            {
+                return UINT_MAX;
+            }
+            float exploit = -child->Q / (float) child->N;
+            float explore = StateTree::branchingFactor * sqrt( log(node.N) / child->N);
+            return exploit + explore;  
 }
 
 int StateTree::UCTSelect(StateNode& node)
 {
-    std::vector<StateNode>* childNodes = &childMap.at(node.ID);
+   std::vector<StateNodePtr>* childNodes = &node.children;
 
-    auto UCT
+   /*  auto UCT
     {
-        [=] (const StateNode& child) -> float 
+        [=] (StateNodePtr& child) -> float
         {
-            float exploit = -child.Q / (float) child.N;
-            float explore = branchingFactor * sqrt( log(node.N) / child.N);
-            return exploit + explore;  
+            
         }
-    };
-    auto maxIter = std::max_element(childNodes->begin(), childNodes->end(), [=] (const StateNode& a, const StateNode& b) -> bool
-    {
-        return UCT(a) < UCT(b);
-    });
-    //std::cout << UCT(*maxIter) << '\n';
-    int i = std::distance(childNodes->begin(), maxIter);
-    return i;
+    }; */
+    
+    float maxUCT = -999999;
+    int bestIndex = 0;
+    int index = 0;
+    for(auto iter = childNodes->begin(); iter != childNodes->end(); iter++) {
+        const float currUCT = UCT(*iter, node);
+        if (currUCT > maxUCT) {
+            maxUCT = currUCT;
+            bestIndex = index;
+        }
+        ++index;
+    }
+    return bestIndex;
 }
 
 std::vector<StateNode*> StateTree::selectPath(StateNode& node)
@@ -48,13 +63,13 @@ std::vector<StateNode*> StateTree::selectPath(StateNode& node)
         path.push_back(nodeptr);
         // First check whether the node is expanded or not by searching for it in the childMap - if it is not expanded, we stop the search here
         // We assume that we will never go as far deep as reaching a terminal state, so there is no need to check for a win (it costs extra time)
-        if (!childMap.contains(nodeptr->ID) || nodeptr->game.board.checkWin() != -1)
+        if (nodeptr->children.size() == 0 || nodeptr->game.board.checkWin() != -1)
         {
             return path;
         }
         // If this node does have children, it isn't a leaf node. Then, we can run UCTSelect to choose the optimal child node
         // If all child nodes are unexplored, UCTSelect just chooses the first one
-        nodeptr = &childMap[nodeptr->ID][UCTSelect(*nodeptr)];
+        nodeptr = nodeptr->children[UCTSelect(*nodeptr)].get();
     }
 }
 
