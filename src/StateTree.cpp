@@ -15,10 +15,6 @@ void StateTree::expand(StateNode& node)
 
 float StateTree::UCT(StateNodePtr& child, StateNode& node)
 {
-    if (child->N == 0)
-            {
-                return UINT_MAX;
-            }
             float exploit = -child->Q / (float) child->N;
             float explore = StateTree::branchingFactor * sqrt( log(node.N) / child->N);
             return exploit + explore;  

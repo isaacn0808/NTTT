@@ -115,13 +115,13 @@ MovePos MCTSeval(Game& game, int count, int type, float branchFactor)
     for(int i = 0; i < root.children.size(); ++i)
     {
         StateNode& node = *(root.children[i].get());
-       // node.print();
         if((node.Q / (float) node.N) < bestEval)
         {
             bestEval = node.Q / (float) node.N;
             bestIndex = i;
         }
     }
+    std::cout << bestIndex << '\n';
     return root.children[bestIndex].get()->game.lastMove;
 }
 };
@@ -129,16 +129,19 @@ MovePos MCTSeval(Game& game, int count, int type, float branchFactor)
 {
     auto start = high_resolution_clock::now();
         Game g;
-   //     while (g.board.checkWin() == -1) {
-            g.move(Strategy::MCTSeval(g, 10000, 0, 0.5));
-            std::cout << sizeof(g) << '\n';
-           // g.board.print();
-        //    if (g.board.checkWin() != -1) {
-             //   break;
-      //      }
-          //  g.move(Strategy::MCTSeval(g, 1000, 1, 0.25));
-            //g.board.print();
-    //    }
+        while (g.board.checkWin() == -1) {
+            int x1, y1, x2, y2;
+            std::cin >> x1 >> y1 >> x2 >> y2;
+            g.move(MovePos(x1, y1, x2, y2));
+            g.board.print();
+            if (g.board.checkWin() != -1) {
+                break;
+            }
+            MovePos m = Strategy::MCTSeval(g, 5000, 1, 0.5);
+            m.print();
+            g.move(m);
+            g.board.print();
+        }
     //std::cout << g.board.checkWin() << '\n';
     auto end = high_resolution_clock::now();
     std::cout << duration_cast<milliseconds>(end - start).count() << '\n';

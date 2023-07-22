@@ -3,7 +3,8 @@
 #include <cmath>
         //rep. a move done on the board and its position
 struct MovePos {
-        MovePos(int x, int y, int type) : x(x), y(y), type(type){}
+        MovePos(int x, int y, int type = -1) : x(x), y(y), type(type){}
+        MovePos(int x1, int y1, int x2, int y2, int type = -1) : x(3 * x1 + x2), y(3 * y1 + y2), type(type){}
         int x;
         int y;
         int type;
